@@ -231,7 +231,7 @@ class _MyHomePageState extends State<MyHomePage> {
         //thumbVisibility: false,
         //trackVisibility: true,
         child: SingleChildScrollView(
-          key: PageStorageKey(horizontalScrollController),
+          //key: PageStorageKey(horizontalScrollController),
           scrollDirection: Axis.horizontal,
           controller: horizontalScrollController,
           child: Column(
