@@ -287,17 +287,17 @@ class _MyHomePageState extends State<MyHomePage> {
                           delegate: FlutterListViewDelegate(
                             (BuildContext context, int index) {
                               _dbprint("xxxxxxxxxxxxxxxxx $index");
-                                    if (index == catchLockupIndex) {
-                                      if (++catchLockupCounter > 5) {
-                                        if (catchLockupCounter == 6) {
-                                          _dbprint(">>>>>>>>>>>>>  locked up");
-                                        }
-                                        return SizedBox();
-                                      }
-                                    } else {
-                                      catchLockupCounter = 0;
-                                      catchLockupIndex = index;
-                                    }
+                              if (index == catchLockupIndex) {
+                                if (++catchLockupCounter > 5) {
+                                  if (catchLockupCounter == 6) {
+                                    _dbprint(">>>>>>>>>>>>>  locked up");
+                                  }
+                                  return SizedBox();
+                                }
+                              } else {
+                                catchLockupCounter = 0;
+                                catchLockupIndex = index;
+                              }
 
                               return buildItem(index);
                             },
