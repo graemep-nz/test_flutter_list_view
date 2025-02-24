@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_list_view/flutter_list_view.dart';
+import 'article_frame3.dart';
 
 
 String formatnum(int val) {
@@ -61,8 +62,11 @@ class _MyHomePageState extends State<MyHomePage> {
   UniqueKey  myUniqueKey = UniqueKey();
   FlutterListViewController  flutterListViewScrollController = FlutterListViewController();
   int delay = 500;
-  int maxitems = 1000;
+  int maxitems = 24;
   bool reatt = false;
+  GlobalKey fred = GlobalKey(debugLabel: "a3");
+  int catchLockupCounter = 0;
+  int catchLockupIndex = 0;
 
   void _incrementCounter() {
     setState(() {
@@ -75,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // workaround for problem with flutter_list_view
-      checkForReattach();
+      //checkForReattach();
     });
 
     return Scaffold(
@@ -165,7 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             SizedBox(height:20),
             SizedBox(
-              height: 400,
+              height: 290,
               child: bigWidget(),
             ),
 
@@ -182,9 +186,12 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+
   static Widget buildItem(int num) {
     DateTime abc = DateTime.now();
     return Container(
+      height: 80,
+      width: 480,
       key: ValueKey(num),
       padding: const EdgeInsets.fromLTRB(8, 2, 8, 6),
       child:
@@ -203,8 +210,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Text( "Date now  ${DateFormat.yMMMEd().add_jm().format(abc)}"
-                           "  ${formatnum(abc.millisecondsSinceEpoch - startupTime)}",
+                    Text( "Date now  ${DateFormat.yMMMEd().add_jm().format(abc)}",
+                           //"  ${formatnum(abc.millisecondsSinceEpoch - startupTime)}",
                       //style: TextStyle(color: Color.fromRGBO(33, 217, 17, 1.0),
                       //style: TextStyle(color: Color.fromRGBO(18,107,250, 1.0),
                       //style: TextStyle(color: Color.fromRGBO(0x9d, 0x42, 0xff, 1.0),
@@ -213,7 +220,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             fontWeight: FontWeight.bold,
                       )
                     ),
-                    Text("Index  $num  \nAnother line")
+                    Text("Index  $num")
                   ],
                 ),
               ),
@@ -222,10 +229,29 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Widget smallWidget() {
+    return ArticleFrame3(
+      key: fred,
+      frameTitle: "Announcements /News23",
+      frameWidth: 480,
+      frameHeight2: 240,
+      allowHeightChange: true,
+      myColNumber: 2,
+      flutterListViewScrollController: flutterListViewScrollController,
+      maxItemCountCallback: () => maxitems,
+      clientListViewItemBuilder: (context, index) {
+        return buildItem(index);
+      },
+
+      //listItems: List<NewsItem>.generate(30, (index) => NewsItem(date: DateTime.now()))
+    );
+
+  }
   Widget bigWidget() {
     final horizontalScrollController = ScrollController();
     return SizedBox(
       width: 350,
+      height:290,
       child: Scrollbar(
         controller: horizontalScrollController,
         //thumbVisibility: false,
@@ -251,7 +277,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   //constraints: BoxConstraints(maxHeight: frameHeight2, maxWidth: (frameWidth - 2 - (2*(borderWidth + 2)))   ),
                   child:
                       SizedBox(
-                        height: 350,
+                        height: 240,
                         width:350,
                         child: FlutterListView(
                           key: myUniqueKey,
@@ -261,6 +287,18 @@ class _MyHomePageState extends State<MyHomePage> {
                           delegate: FlutterListViewDelegate(
                             (BuildContext context, int index) {
                               _dbprint("xxxxxxxxxxxxxxxxx $index");
+                                    if (index == catchLockupIndex) {
+                                      if (++catchLockupCounter > 5) {
+                                        if (catchLockupCounter == 6) {
+                                          _dbprint(">>>>>>>>>>>>>  locked up");
+                                        }
+                                        return SizedBox();
+                                      }
+                                    } else {
+                                      catchLockupCounter = 0;
+                                      catchLockupIndex = index;
+                                    }
+
                               return buildItem(index);
                             },
                             childCount: maxitems,
