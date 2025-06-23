@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_list_view/flutter_list_view.dart';
-import 'article_frame3.dart';
+
+//import 'package:flutter_list_view/flutter_list_view.dart';
+
+import 'flutter_list_view.dart';
+import 'flutter_list_view_delegate.dart';
+import 'flutter_list_view_controller.dart';
 
 
 String formatnum(int val) {
@@ -14,6 +17,7 @@ int startupTime = DateTime.now().millisecondsSinceEpoch;
 
 
 void commonDebugPrint(Object? obj, [String name = ""]) {
+  return;
   if (obj is String) {
     String s1 = "##$name " + formatnum(DateTime.now().millisecondsSinceEpoch - startupTime);
     print(s1 + "  " + obj);   //
@@ -37,12 +41,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'FlutterListView Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'flutter_list_view lockup demo'),
     );
   }
 }
@@ -229,24 +233,24 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget smallWidget() {
-    return ArticleFrame3(
-      key: fred,
-      frameTitle: "Announcements /News23",
-      frameWidth: 480,
-      frameHeight2: 240,
-      allowHeightChange: true,
-      myColNumber: 2,
-      flutterListViewScrollController: flutterListViewScrollController,
-      maxItemCountCallback: () => maxitems,
-      clientListViewItemBuilder: (context, index) {
-        return buildItem(index);
-      },
-
-      //listItems: List<NewsItem>.generate(30, (index) => NewsItem(date: DateTime.now()))
-    );
-
-  }
+  // Widget smallWidget() {
+  //   return ArticleFrame3(
+  //     key: fred,
+  //     frameTitle: "Announcements /News23",
+  //     frameWidth: 480,
+  //     frameHeight2: 240,
+  //     allowHeightChange: true,
+  //     myColNumber: 2,
+  //     flutterListViewScrollController: flutterListViewScrollController,
+  //     maxItemCountCallback: () => maxitems,
+  //     clientListViewItemBuilder: (context, index) {
+  //       return buildItem(index);
+  //     },
+  //
+  //     //listItems: List<NewsItem>.generate(30, (index) => NewsItem(date: DateTime.now()))
+  //   );
+  //
+  // }
   Widget bigWidget() {
     final horizontalScrollController = ScrollController();
     return SizedBox(
@@ -268,44 +272,38 @@ class _MyHomePageState extends State<MyHomePage> {
               Text("Something here"),
               SizedBox(height: 20,),
               //======================================================================================
-              WidgetSize(
-                onChange: (Size ns) {
-                  // postFrameCallback
-                  //frameSize2 = ns;
-                },
-                child: Container(
-                  //constraints: BoxConstraints(maxHeight: frameHeight2, maxWidth: (frameWidth - 2 - (2*(borderWidth + 2)))   ),
-                  child:
-                      SizedBox(
-                        height: 240,
-                        width:350,
-                        child: FlutterListView(
-                          key: myUniqueKey,
-                          controller: flutterListViewScrollController,
-                          shrinkWrap: true,
-                          cacheExtent: 20,  // pixels
-                          delegate: FlutterListViewDelegate(
-                            (BuildContext context, int index) {
-                              _dbprint("xxxxxxxxxxxxxxxxx $index");
-                              if (index == catchLockupIndex) {
-                                if (++catchLockupCounter > 5) {
-                                  if (catchLockupCounter == 6) {
-                                    _dbprint(">>>>>>>>>>>>>  locked up");
-                                  }
-                                  return SizedBox();
+              Container(
+                //constraints: BoxConstraints(maxHeight: frameHeight2, maxWidth: (frameWidth - 2 - (2*(borderWidth + 2)))   ),
+                child:
+                    SizedBox(
+                      height: 240,
+                      width:350,
+                      child: FlutterListView(
+                        key: myUniqueKey,
+                        controller: flutterListViewScrollController,
+                        shrinkWrap: true,
+                        cacheExtent: 20,  // pixels
+                        delegate: FlutterListViewDelegate(
+                          (BuildContext context, int index) {
+                            _dbprint("xxxxxxxxxxxxxxxxx $index");
+                            if (index == catchLockupIndex) {
+                              if (++catchLockupCounter > 5) {
+                                if (catchLockupCounter == 6) {
+                                  print(">>>>>>>>>>>>>  locked up at $index");
                                 }
-                              } else {
-                                catchLockupCounter = 0;
-                                catchLockupIndex = index;
+                                return SizedBox();
                               }
+                            } else {
+                              catchLockupCounter = 0;
+                              catchLockupIndex = index;
+                            }
 
-                              return buildItem(index);
-                            },
-                            childCount: maxitems,
-                          )
-                        ),
+                            return buildItem(index);
+                          },
+                          childCount: maxitems,
+                        )
                       ),
-                ),
+                    ),
               ),
               SizedBox(height:10),
               //==========================================================================================
@@ -351,11 +349,11 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<*/
 
-  void checkForReattach() {
-    if (reatt && flutterListViewScrollController.hasClients) {
-      flutterListViewScrollController.sliverController.checkForReattach();
-    }
-  }
+  // void checkForReattach() {
+  //   if (reatt && flutterListViewScrollController.hasClients) {
+  //     flutterListViewScrollController.sliverController.checkForReattach();
+  //   }
+  // }
 
   void _jumpToBottom() {
     if (flutterListViewScrollController.hasClients) {
@@ -368,42 +366,3 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 
-class WidgetSize extends StatefulWidget {
-  final Widget child;
-  final Function(Size) onChange;
-
-  const WidgetSize({
-    Key? key,
-    required this.onChange,
-    required this.child,
-  }) : super(key: key);
-
-  @override
-  _WidgetSizeState createState() => _WidgetSizeState();
-}
-
-class _WidgetSizeState extends State<WidgetSize> {
-  @override
-  Widget build(BuildContext context) {
-    SchedulerBinding.instance.addPostFrameCallback(postFrameCallback);
-    return Container(
-      key: widgetKey,
-      child: widget.child,
-    );
-  }
-
-  var widgetKey = GlobalKey();
-  Size? oldSize;
-
-  void postFrameCallback(_) async {
-    var context = widgetKey.currentContext;
-    //await Future.delayed(
-      //  const Duration(milliseconds: 100)); // wait till the widget is drawn
-    if (!mounted || context == null) return; // not yet attached to layout
-
-    var newSize = context.size!;
-    if (oldSize == newSize) return;
-    oldSize = newSize;
-    widget.onChange(newSize);
-  }
-}
