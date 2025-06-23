@@ -114,7 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   onPressed: () {
                     _dbprint("animate top");
                     flutterListViewScrollController.sliverController.animateToIndex(
-                      0, duration: const Duration(milliseconds: 500), curve: Curves.ease);
+                      0, duration: Duration(milliseconds: delay), curve: Curves.ease);
                   },
                   child: const Text('top'),
                 ),
@@ -123,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   onPressed: () {
                     _dbprint("animate bottom");
                     flutterListViewScrollController.sliverController.animateToIndex(
-                      maxitems - 1, duration: const Duration(milliseconds: 500), curve: Curves.ease);
+                      maxitems - 1, duration: Duration(milliseconds: delay), curve: Curves.ease);
                   },
                   child: const Text('bottom'),
                 ),
